@@ -86,26 +86,32 @@ def test_bad_val_for_type_of_estimator():
     ml_predictor = Predictor(type_of_estimator='invalid_type_of_estimator', column_descriptions=column_descriptions)
 
 
-# def test_nans_in_output_column():
-#     np.random.seed(0)
+def test_nans_in_output_column():
+    np.random.seed(0)
 
-#     df_titanic_train, df_titanic_test = utils.get_titanic_binary_classification_dataset()
+    df_titanic_train, df_titanic_test = utils.get_titanic_binary_classification_dataset()
 
-#     column_descriptions = {
-#         'survived': 'output'
-#         , 'embarked': 'categorical'
-#         , 'pclass': 'categorical'
-#     }
+    df_titanic_test.loc[3, 'survived'] = float('nan')
+    df_titanic_test.loc[30, 'survived'] = np.nan
 
-#     ml_predictor = Predictor(type_of_estimator='classifier', column_descriptions=column_descriptions)
 
-#     ml_predictor.train(df_titanic_train, optimize_final_model=True)
+    print(df_titanic_test.survived)
 
-#     test_score = ml_predictor.score(df_titanic_test, df_titanic_test.survived)
+    column_descriptions = {
+        'survived': 'output'
+        , 'embarked': 'categorical'
+        , 'pclass': 'categorical'
+    }
 
-#     print('test_score')
-#     print(test_score)
+    ml_predictor = Predictor(type_of_estimator='classifier', column_descriptions=column_descriptions)
 
-#     assert -0.215 < test_score < -0.17
+    ml_predictor.train(df_titanic_train)
+
+    test_score = ml_predictor.score(df_titanic_test, df_titanic_test.survived)
+
+    print('test_score')
+    print(test_score)
+
+    assert -0.215 < test_score < -0.17
 
 

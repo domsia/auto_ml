@@ -1,3 +1,4 @@
+import pandas as pd
 import scipy
 from sklearn.base import BaseEstimator, TransformerMixin
 try:
@@ -81,6 +82,15 @@ class FinalModelATC(BaseEstimator, TransformerMixin):
         # At the time of writing this, GradientBoosting does not support sparse matrices for predictions
         if (self.model_name[:16] == 'GradientBoosting' or self.model_name in ['BayesianRidge', 'LassoLars', 'OrthogonalMatchingPursuit', 'ARDRegression']) and scipy.sparse.issparse(X):
             X = X.todense()
+
+        bad_rows = pd.isnull(y)
+        if len(bad_rows) > 0:
+            print('We encountered a number of missing values for this output column')
+            print('Here is the number of missing (nan, None, etc.) values for this column:')
+            print(len(bad_rows))
+            print('We will remove these values, and continue with scoring on the cleaned dataset')
+            X = X[~bad_rows]
+            y = y[~bad_rows]
 
         if self._scorer is not None:
             if self.type_of_estimator == 'regressor':

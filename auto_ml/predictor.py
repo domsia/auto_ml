@@ -978,6 +978,18 @@ class Predictor(object):
 
         if isinstance(X_test, list):
             X_test = pd.DataFrame(X_test)
+
+        bad_rows = pd.isnull(y_test)
+        if len(bad_rows) > 0:
+            print('We encountered a number of missing values for this output column')
+            print('Specifically, here is the output column:')
+            print(self.output_column)
+            print('And here is the number of missing (nan, None, etc.) values for this column:')
+            print(len(bad_rows))
+            print('We will remove these values, and continue with scoring on the cleaned dataset')
+            X_test = X_test[~bad_rows]
+            y_test = y_test[~bad_rows]
+
         y_test = list(y_test)
 
         if self._scorer is not None:
