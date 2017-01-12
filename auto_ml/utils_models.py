@@ -13,8 +13,14 @@ except NameError:
 except ImportError:
     pass
 
-if xgb_installed:
-    import xgboost as xgb
+lgb_installed = False
+try:
+    import lightgbm as lgb
+    lgb_installed = True
+except NameError:
+    pass
+except ImportError:
+    pass
 
 
 def get_model_from_name(model_name):
@@ -57,6 +63,10 @@ def get_model_from_name(model_name):
     if xgb_installed:
         model_map['XGBClassifier'] = xgb.XGBClassifier(colsample_bytree=0.8, min_child_weight=5, subsample=1.0, learning_rate=0.1, n_estimators=200, nthread=-1)
         model_map['XGBRegressor'] = xgb.XGBRegressor(nthread=-1, n_estimators=200)
+
+    if lgb_installed:
+        model_map['LGBMRegressor'] = lgb.LGBMRegressor(objective='regression', num_leaves=31, learning_rate=0.05, n_estimators=200)
+        model_map['LGBMClassifier'] = lgb.LGBMClassifier(objective='regression', num_leaves=31, learning_rate=0.05, n_estimators=200)
 
     return model_map[model_name]
 
@@ -112,11 +122,17 @@ def get_name_from_model(model):
     if isinstance(model, MiniBatchKMeans):
         return 'MiniBatchKMeans'
     # Putting these at the end. By this point, we've already determined it is not any of our other models
-    if isinstance(model, xgb.XGBClassifier):
-        return 'XGBClassifier'
-    if isinstance(model, xgb.XGBRegressor):
-        return 'XGBRegressor'
+    if xgb_installed:
+        if isinstance(model, xgb.XGBClassifier):
+            return 'XGBClassifier'
+        if isinstance(model, xgb.XGBRegressor):
+            return 'XGBRegressor'
 
+    if lgb_installed:
+        if isinstance(model, lgb.LGBMClassifier):
+            return 'LGBMClassifier'
+        if isinstance(model, lgb.LGBMRegressor):
+            return 'LGBMRegressor'
     # if isinstance(model, KerasRegressor):
     #     return 'KerasRegressor'
 
