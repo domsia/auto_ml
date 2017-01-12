@@ -66,7 +66,7 @@ def get_model_from_name(model_name):
 
     if lgb_installed:
         model_map['LGBMRegressor'] = lgb.LGBMRegressor(objective='regression', num_leaves=31, learning_rate=0.05, n_estimators=200)
-        model_map['LGBMClassifier'] = lgb.LGBMClassifier(objective='regression', num_leaves=31, learning_rate=0.05, n_estimators=200)
+        model_map['LGBMClassifier'] = lgb.LGBMClassifier(num_leaves=31, learning_rate=0.05, n_estimators=200)
 
     return model_map[model_name]
 
@@ -301,6 +301,18 @@ def get_search_params(model_name):
             'loss': ['hinge', 'squared_hinge'],
             'class_weight': ['balanced', None],
             'C': [0.01, 0.3, 0.5, 0.7, 0.8, 0.9, 0.95, 0.99, 1.0]
+        }
+
+        , 'LGBMClassifier': {
+            # 'max_bin': [25, 50, 100, 200, 250, 300, 400, 500, 750, 1000]
+            'num_leaves': [10, 20, 30, 40, 50, 200]
+            , 'colsample_bytree': [0.7, 0.9, 1.0]
+            , 'subsample': [0.7, 0.9, 1.0]
+            # , 'subsample_freq': [0.3, 0.5, 0.7, 0.9, 1.0]
+            , 'learning_rate': [0.01, 0.05, 0.1]
+            # , 'subsample_for_bin': [1000, 10000]
+            , 'n_estimators': [5, 20, 50, 200]
+
         }
 
     }
